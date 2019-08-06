@@ -16,14 +16,31 @@ vts <- fillTimeSeries(inp)
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
     vts <- fillTimeSeries(inp)
-    output$distPlot <- renderPlot({
+    output$distPlotSavings <- renderPlot({
         inp$preAPR <- input$preAPR
+        inp$yearsFTW <- input$yearsFTW
+        inp$wRatePerc <- input$wRatePerc
         vts <- fillTimeSeries(inp)        
         ggplot(vts, aes(x = month, y = valueK)) + 
-            theme_bw() + geom_line() +
+            theme_bw() + geom_line() + 
             ggtitle("Retirement Savings\nValue by Month ($1,000)") +
             labs(x = "Month", y = "Value ($1000s)")
+#        ggplot(vts, aes(x = month, y = withdrawals)) + 
+#            theme_bw() + geom_line() + 
+#            ggtitle("Retirement Income\nBy Month") +
+#            labs(x = "Month", y = "Value")
 
     })
+    output$distPlotIncome <- renderPlot({
+        inp$preAPR <- input$preAPR
+        inp$yearsFTW <- input$yearsFTW
+        inp$wRatePerc <- input$wRatePerc
+        vts <- fillTimeSeries(inp)        
+        ggplot(vts, aes(x = month, y = withdrawals)) + 
+            theme_bw() + geom_line() + 
+            ggtitle("Retirement Income\nBy Month") +
+            labs(x = "Month", y = "Value")
+        
+    })    
 
 })
