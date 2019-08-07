@@ -35,11 +35,14 @@ shinyServer(function(input, output) {
         inp$preAPR <- input$preAPR
         inp$yearsFTW <- input$yearsFTW
         inp$wRatePerc <- input$wRatePerc
-        vts <- fillTimeSeries(inp)        
-        ggplot(vts, aes(x = month, y = withdrawals)) + 
+        vts <- fillTimeSeries(inp) 
+        
+        #Aggregate 
+        vts_year <- getValueByYear(vts)
+        ggplot(vts_year, aes(x = year, y = incSvgsWdraw)) + 
             theme_bw() + geom_line() + 
-            ggtitle("Retirement Income\nBy Month") +
-            labs(x = "Month", y = "Value")
+            ggtitle("Retirement Income\nBy Year") +
+            labs(x = "Year", y = "Value")
         
     })    
 

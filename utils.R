@@ -18,6 +18,7 @@ readSetup <- function() {
   inpw$yearsFTW <- as.numeric(inpw$yearsFTW)
   inpw$wRatePerc <- as.numeric(inpw$wRatePerc)  
   inpw$addNORCMonth <- as.numeric(inpw$addNORCYear) / 12.
+  inpw$incMonKLKSS <- as.numeric(inpw$incMonKLKSS)
   return(inpw)
 }
 #############################################################################################
@@ -33,13 +34,19 @@ fillTimeSeries <- function(inp) {
   #browser()
 }
 #############################################################################################
+#
+# inc   Income
+# exp   Expense
+# mon   Monthly value
+# year  Yearly value
+#############################################################################################
 getValueByMonth <- function(monthStart, initValue, inp) {
   #Get the monthly interest rate
   #browser()
   value <- numeric(length(monthStart))
   growth <- numeric(length(monthStart))
   contributions <- numeric(length(monthStart))  
-  withdrawals <- numeric(length(monthStart))
+  incSvgsWdraw <- numeric(length(monthStart))
   #Only add contributions for the number of years working
   monthsFTW <- inp$yearsFTW*12
   wRate <- inp$wRatePerc / 100.
@@ -47,18 +54,36 @@ getValueByMonth <- function(monthStart, initValue, inp) {
   
   preMPR <- inp$preAPR / (100.*12.)
   value[1] <- initValue
+  
+  #Calculate the amount to withdraw from the first month.  That will get used each
+  # subsequent month but possibly inflated.
+  
+  wdMonthOne <- initValue * wRateMonth
   for (nMonth in 1:(length(monthStart)-1)) {
     #browser()
     growth[nMonth] <- value[nMonth]*preMPR
     contributions[nMonth] <- ifelse(nMonth<=monthsFTW, inp$addMonth + inp$addNORCMonth, 0)
-    withdrawals[nMonth] <- ifelse(nMonth>monthsFTW, value[nMonth]*wRateMonth, 0)    
-    value[nMonth+1] <- value[nMonth] + growth[nMonth] + contributions[nMonth] - withdrawals[nMonth]
+    incSvgsWdraw[nMonth] <- ifelse(nMonth>monthsFTW & value[nMonth]>0, wdMonthOne, 0)    
+    value[nMonth+1] <- value[nMonth] + growth[nMonth] + contributions[nMonth] - incSvgsWdraw[nMonth]
+    value[nMonth+1] <- ifelse(value[nMonth+1]<0, 0, value[nMonth+1])
   }
-  #browser()
-  vts <- data.frame(month = monthStart, growth, value, contributions, withdrawals)
+  vts <- data.frame(month = monthStart, growth, value, contributions, incSvgsWdraw, year=floor_date(monthStart,unit="year"))
   vts$valueK <- vts$value / 1000.
   vts$valueM <- vts$value / 1000000.
+  agg <- vts %>% group_by(year) %>% summarize(growth=sum(growth),
+                                              contributions = sum(contributions),
+                                              incSvgsWdraw = sum(incSvgsWdraw),
+                                              minValue = sum(value))
   #browser()  
   return(vts)
 
+}
+#############################################################################################
+getValueByYear <- function(vts) {
+  agg <- vts %>% group_by(year) %>% summarize(growth=sum(growth),
+                                              contributions = sum(contributions),
+                                              incSvgsWdraw = sum(incSvgsWdraw),
+                                              minValue = min(value),
+                                              maxValue = max(value))
+  return(agg)
 }

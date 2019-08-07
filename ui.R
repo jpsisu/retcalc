@@ -5,7 +5,7 @@
 # Find out more about building applications with Shiny here:
 #
 #    http://shiny.rstudio.com/
-#
+#https://www.showmeshiny.com/predictive-value/
 
 library(shiny)
 
@@ -45,7 +45,14 @@ shinyUI(
                         min = 0,
                         max = 10,
                         value = 3) 
-            )
+            ),
+            column(4,            
+                   sliderInput("inflationRate",
+                               "Inflation Rate (%)",
+                               min = 0,
+                               max = 6,
+                               value = 2) 
+            )            
         ),
         
  #       strong("Caption:"),
