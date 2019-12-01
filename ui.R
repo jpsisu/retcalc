@@ -6,6 +6,15 @@
 #
 #    http://shiny.rstudio.com/
 #https://www.showmeshiny.com/predictive-value/
+#' TODO
+#' Interest Rate not working
+#'   Key Behavior
+#'   server.R
+#'      readSetup()
+#'         reads in retirementsetup.xlsx and stores the results in a variable called inp
+#'      fillTimeSeries()
+#'         Projects out a certain number of months, and gets the value by month based on starting value and 
+#'         input parameters
 
 library(shiny)
 
@@ -22,45 +31,11 @@ shinyUI(
         br(),
         
         fluidRow(
-              column(4,
-                     sliderInput("preAPR",
-                                 "Interest APR",
-                                 min = 0,
-                                 max = 20,
-                                 value = 5)
-            ),
-            column(4,            
-            sliderInput("yearsFTW",
-                        "Years of Full Time Work",
-                        min = 0,
-                        max = 5,
-                        value = 3)
-        ),
-        
-#        hr(),
-        fluidRow(
-            column(4,            
-            sliderInput("wRatePerc",
-                        "Widthdrawal Rate (%)",
-                        min = 0,
-                        max = 10,
-                        value = 3) 
-            ),
-            column(4,            
-                   sliderInput("inflationRate",
-                               "Inflation Rate (%)",
-                               min = 0,
-                               max = 6,
-                               value = 2) 
-            )            
-        ),
-        
- #       strong("Caption:"),
-        
-#        p("This widget is meant to show the effect that changing clinical test accuracy, precision, sensitivity, and specificity has on other variables. You have to select whether to manipulate the characteristic statistics of the test (sensitivity and specificity) or the direct quantities (non-disease and disease mean and standard deviation, and the cutoff for a positive test). Whichever set you want to manipulate using the sliders, the other quantities will be calculated. More information is available at the bottom of this page."),
-#        hr(),
-        br(),
-        br()
-    )
-))
+            column(4, sliderInput("preAPR", "Interest APR", min = 0, max = 10, value = 5)),
+            column(4, sliderInput("yearsFTW", "Years of Full Time Work", min = 0, max = 5, value = 3)),
+            column(4, sliderInput("wRatePerc", "Widthdrawal Rate (%)", min = 0, max = 10, value = 3)),
+            column(4, sliderInput("inflRate", "Inflation Rate (%)", min = 0, max = 6, value = 2))            
+        )            
+        )
+)
 
